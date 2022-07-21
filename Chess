@@ -1,0 +1,524 @@
+'''
+Created on Jul 13, 2022
+
+@author: Sanjay Sundaram
+'''
+from pip._vendor.pygments.formatters import img
+from webbrowser import BackgroundBrowser
+import imghdr
+from _overlapped import NULL
+from tkinter.messagebox import askretrycancel
+
+from tkinter import *
+from PIL import Image  
+from PIL import ImageTk 
+import math
+
+root = Tk()
+root.title("Game")
+
+frame = Frame(root)
+
+global canvas
+canvas = Canvas(root, width = 800, height = 800)
+
+def createBoard():
+    
+    global background
+    img = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/Chessboard.png")
+    img = img.resize((800,800), Image.ANTIALIAS)
+    background = ImageTk.PhotoImage(img)
+    
+    canvas.create_image(400, 400, image=background)
+    canvas.pack()
+
+
+def createBlackPawn():
+    blckPawnImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/black_pawn.png")
+    blckPawnImg = blckPawnImg.resize((50, 50), Image.ANTIALIAS)
+        
+    # Black Pawns
+    global B_PAWN1
+    global b_pawn1
+    b_pawn1 = ImageTk.PhotoImage(blckPawnImg)
+    B_PAWN1 = canvas.create_image(50,150, image=b_pawn1)
+    
+     
+    global B_PAWN2   
+    global b_pawn2
+    b_pawn2 = ImageTk.PhotoImage(blckPawnImg)
+    B_PAWN2 = canvas.create_image(150,150, image=b_pawn2)
+        
+    global B_PAWN3
+    global b_pawn3
+    b_pawn3 = ImageTk.PhotoImage(blckPawnImg)
+    B_PAWN3 = canvas.create_image(250,150, image=b_pawn3)
+       
+    global B_PAWN4 
+    global b_pawn4
+    b_pawn4 = ImageTk.PhotoImage(blckPawnImg)
+    B_PAWN4 = canvas.create_image(350,150, image=b_pawn4)
+    
+    global B_PAWN5
+    global b_pawn5
+    b_pawn5 = ImageTk.PhotoImage(blckPawnImg)
+    B_PAWN5 = canvas.create_image(450,150, image=b_pawn5)
+    
+    global B_PAWN6   
+    global b_pawn6
+    b_pawn6 = ImageTk.PhotoImage(blckPawnImg)
+    B_PAWN6 = canvas.create_image(550,150, image=b_pawn6)
+        
+    global B_PAWN7
+    global b_pawn7
+    b_pawn7 = ImageTk.PhotoImage(blckPawnImg)
+    B_PAWN7 = canvas.create_image(650,150, image=b_pawn7)
+        
+    global B_PAWN8
+    global b_pawn8
+    b_pawn8 = ImageTk.PhotoImage(blckPawnImg)
+    B_PAWN8 = canvas.create_image(750,150, image=b_pawn8)
+
+
+
+def createWhitePawn():
+    # White pawns
+    global whtPawnImg
+    whtPawnImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/white_pawn.png")
+    whtPawnImg = whtPawnImg.resize((50, 50), Image.ANTIALIAS)
+    
+    global WHITE_PAWN1
+    global w_pawn1
+    w_pawn1 = ImageTk.PhotoImage(whtPawnImg)
+    WHITE_PAWN1 = canvas.create_image(50,650, image=w_pawn1, tags="w_pawn")
+    
+        
+    global WHITE_PAWN2
+    global w_pawn2
+    w_pawn2 = ImageTk.PhotoImage(whtPawnImg)
+    WHITE_PAWN2 = canvas.create_image(150,650, image=w_pawn2)
+        
+    global WHITE_PAWN3
+    global w_pawn3
+    w_pawn3 = ImageTk.PhotoImage(whtPawnImg)
+    WHITE_PAWN3 = canvas.create_image(250,650, image=w_pawn3)
+        
+    global WHITE_PAWN4
+    global w_pawn4
+    w_pawn4 = ImageTk.PhotoImage(whtPawnImg)
+    WHITE_PAWN4 = canvas.create_image(350,650, image=w_pawn4)
+    
+    global WHITE_PAWN5
+    global w_pawn5
+    w_pawn5 = ImageTk.PhotoImage(whtPawnImg)
+    WHITE_PAWN5 = canvas.create_image(450,650, image=w_pawn5)
+        
+    global WHITE_PAWN6
+    global w_pawn6
+    w_pawn6 = ImageTk.PhotoImage(whtPawnImg)
+    WHITE_PAWN6 = canvas.create_image(550,650, image=w_pawn6)
+     
+    global WHITE_PAWN7   
+    global w_pawn7
+    w_pawn7 = ImageTk.PhotoImage(whtPawnImg)
+    WHITE_PAWN7 = canvas.create_image(650,650, image=w_pawn7)
+      
+    global WHITE_PAWN8  
+    global w_pawn8
+    w_pawn8 = ImageTk.PhotoImage(whtPawnImg)
+    WHITE_PAWN8 = canvas.create_image(750,650, image=w_pawn8)
+
+def createWhiteRook():
+    # White rooks
+    whtRookImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/white_rook.png")
+    whtRookImg = whtRookImg.resize((100, 100), Image.ANTIALIAS)
+    
+    global W_ROOK1
+    global w_rook1
+    w_rook1 = ImageTk.PhotoImage(whtRookImg)
+    W_ROOK1 = canvas.create_image(50, 750, image=w_rook1)
+    
+    global W_ROOK2  
+    global w_rook2
+    w_rook2 = ImageTk.PhotoImage(whtRookImg)
+    W_ROOK2 = canvas.create_image(750, 750, image=w_rook2)
+
+def createBlackRook():
+    # Black rooks
+    blckRookImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/black_rook.png")
+    blckRookImg = blckRookImg.resize((80, 80), Image.ANTIALIAS)
+    
+    global B_ROOK1 
+    global b_rook1
+    b_rook1 = ImageTk.PhotoImage(blckRookImg)
+    B_ROOK1 = canvas.create_image(50, 50, image=b_rook1)
+       
+    global B_ROOK2 
+    global b_rook2
+    b_rook2 = ImageTk.PhotoImage(blckRookImg)
+    B_ROOK2 = canvas.create_image(750, 50, image=b_rook2)
+
+def createWhiteKnight():
+    # White knights
+    whtKnightImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/white_knight.png")
+    whtKnightImg = whtKnightImg.resize((80, 80), Image.ANTIALIAS)
+       
+    global W_KNIGHT1 
+    global w_knight1
+    w_knight1 = ImageTk.PhotoImage(whtKnightImg)
+    W_KNIGHT1 = canvas.create_image(145, 750, image=w_knight1)
+       
+    global W_KNIGHT2 
+    global w_knight2
+    w_knight2 = ImageTk.PhotoImage(whtKnightImg)
+    W_KNIGHT2 = canvas.create_image(650, 750, image=w_knight2)
+
+def createBlackKnight():
+    # Black knights
+    blckKnightImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/black_knight.png")
+    blckKnightImg = blckKnightImg.resize((80, 80), Image.ANTIALIAS)
+        
+    global B_KNIGHT1
+    global b_knight1
+    b_knight1 = ImageTk.PhotoImage(blckKnightImg)
+    B_KNIGHT1 = canvas.create_image(145, 50, image=b_knight1)
+      
+    global B_KNIGHT2  
+    global b_knight2
+    b_knight2 = ImageTk.PhotoImage(blckKnightImg)
+    B_KNIGHT2 = canvas.create_image(650, 50, image=b_knight2)
+
+
+def createWhiteBishop():
+    # White bishops
+    whtBishopImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/white_bishop.png")
+    whtBishopImg = whtBishopImg.resize((70, 80), Image.ANTIALIAS)
+    
+    global W_BISHOP1    
+    global w_bishop1
+    w_bishop1 = ImageTk.PhotoImage(whtBishopImg)
+    W_BISHOP1 = canvas.create_image(250, 750, image=w_bishop1)
+      
+    global W_BISHOP2  
+    global w_bishop2
+    w_bishop2 = ImageTk.PhotoImage(whtBishopImg)
+    W_BISHOP2 = canvas.create_image(550, 750, image=w_bishop2)
+    
+
+def createBlackBishop():
+    # Black bishop
+    blckBishopImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/black_bishop.png")
+    blckBishopImg = blckBishopImg.resize((70, 80), Image.ANTIALIAS)
+        
+    global B_BISHOP1
+    global b_bishop1
+    b_bishop1 = ImageTk.PhotoImage(blckBishopImg)
+    B_BISHOP1 = canvas.create_image(250, 50, image=b_bishop1)
+    
+    global B_BISHOP2 
+    global b_bishop2
+    b_bishop2 = ImageTk.PhotoImage(blckBishopImg)
+    B_BISHOP2 = canvas.create_image(550, 50, image=b_bishop2)
+
+def createwhiteKingnQueen():
+    # White King/Queen
+    whtKingImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/white_king.png")
+    whtKingImg = whtKingImg.resize((70, 80), Image.ANTIALIAS)
+    
+    global W_KING
+    global w_king
+    w_king = ImageTk.PhotoImage(whtKingImg)
+    W_KING = canvas.create_image(450, 750, image=w_king)
+        
+    whtQueenImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/white_queen.png")
+    whtQueenImg = whtQueenImg.resize((70, 80), Image.ANTIALIAS)
+    
+    global W_QUEEN
+    global w_queen
+    w_queen = ImageTk.PhotoImage(whtQueenImg)
+    W_QUEEN = canvas.create_image(350, 750, image=w_queen)
+
+def createBlackKingnQueen():
+    # Black King/Queen
+    blckKingImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/black_king.png")
+    blckKingImg = blckKingImg.resize((70, 80), Image.ANTIALIAS)
+        
+    blckQueenImg = Image.open("C:/Users/vsid3/eclipse-workspace/Chess_Game/src/black_queen.png")
+    blckQueenImg = blckQueenImg.resize((70, 80), Image.ANTIALIAS)
+        
+    global B_KING
+    global b_king
+    b_king = ImageTk.PhotoImage(blckKingImg)
+    B_KING = canvas.create_image(450, 50, image=b_king)
+     
+    global B_QUEEN   
+    global b_queen
+    b_queen = ImageTk.PhotoImage(blckQueenImg)
+    B_QUEEN = canvas.create_image(350, 50, image=b_queen)
+
+def createMatrix():
+    global matrix
+    matrix = [
+        ["b_rook1", "b_knight1", "b_bishop1", "b_queen", "b_king", "b_bishop2", "b_knight2", "b_rook2"],
+        ["b_pawn", "b_pawn", "b_pawn", "b_pawn", "b_pawn", "b_pawn", "b_pawn", "b_pawn"],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", ""],
+        ["w_pawn", "w_pawn", "w_pawn", "w_pawn", "w_pawn", "w_pawn", "w_pawn", "w_pawn"],
+        ["w_rook", "w_knight", "w_bishop", "w_queen", "w_king", "w_bishop", "w_knight", "w_rook"]
+        ]
+    
+    global objMatrix
+    objMatrix = [[b_rook1, b_knight1, b_bishop1, b_queen, b_king, b_bishop2, b_knight2, b_rook2],
+                 [b_pawn1, b_pawn2, b_pawn3, b_pawn4, b_pawn5, b_pawn6, b_pawn7, b_pawn8],
+                 [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                 [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                 [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                 [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                 [w_pawn1, w_pawn2, w_pawn3, w_pawn4, w_pawn5, w_pawn6, w_pawn7, w_pawn8],
+                 [w_rook1, w_knight1, w_bishop1, w_queen, w_king, w_bishop2, w_knight2, w_rook2]
+        ]
+    
+    global canvasMatrix
+    canvasMatrix = [[B_ROOK1, B_KNIGHT1, B_BISHOP1, B_QUEEN, B_KING, B_BISHOP2, B_KNIGHT2, B_ROOK2],
+                 [B_PAWN1, B_PAWN2, B_PAWN3, B_PAWN4, B_PAWN5, B_PAWN6, B_PAWN7, B_PAWN8],
+                 [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                 [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                 [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                 [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                 [WHITE_PAWN1, WHITE_PAWN2, WHITE_PAWN3, WHITE_PAWN4, WHITE_PAWN5, WHITE_PAWN6, WHITE_PAWN7, WHITE_PAWN8],
+                 [W_ROOK1, W_KNIGHT1, W_BISHOP1, W_QUEEN, W_KING, W_BISHOP2, W_KNIGHT2, W_ROOK2]
+        ]
+    
+    global generalMatrix
+    global blackPiece
+    blackPiece = "B"
+    global whitePiece
+    whitePiece = "W"
+    generalMatrix = [[blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece],
+                     [blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece],
+                     [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                     [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                     [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                     [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+                     [whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece],
+                     [whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece] 
+                     ]
+    
+class movePiece:
+    global isFirstClick
+    isFirstClick = True 
+    def getOrigin(self, eventorigin):
+        
+        global Posx,Posy, i, pieceStr, piece, canvasId, moveTwo, preY , preX, isFirstClick
+        Xcase = math.ceil(eventorigin.x/100)-1
+        Ycase = math.ceil(eventorigin.y/100)-1
+        Posy = Ycase*100+50
+        Posx = Xcase*100+50
+        moveTwo = True
+        
+        
+        if (isFirstClick):
+            # Selects White pawn on first click
+            if matrix[Ycase][Xcase] != "" and generalMatrix[Ycase][Xcase] != blackPiece:
+                    
+                pieceStr = matrix[Ycase][Xcase]
+                        
+                preY = Ycase
+                preX = Xcase
+                print(pieceStr)
+                        
+                piece = objMatrix[Ycase][Xcase]
+                canvasId = canvasMatrix[Ycase][Xcase]
+                    
+            # Selects Black pawn on first piece
+            elif matrix[Ycase][Xcase] != "" and generalMatrix[Ycase][Xcase] != whitePiece:
+                      
+                   
+                pieceStr = matrix[Ycase][Xcase]
+                        
+                preY = Ycase
+                preX = Xcase
+                print(pieceStr)
+                        
+                piece = objMatrix[Ycase][Xcase]
+                canvasId = canvasMatrix[Ycase][Xcase]
+                
+            isFirstClick = False
+        
+        elif (isFirstClick == False):       
+            # 2nd click, checks to see where user is trying to move the white pawn.
+            if ((matrix[preY][preX] != "b_pawn" and matrix[Ycase][Xcase] != "w_pawn") or (matrix[Ycase][Xcase] == "" and matrix[preY][preX] == "w_pawn")):
+                
+                if (generalMatrix[Ycase][Xcase] == blackPiece):
+                    
+                    if ((Ycase + 1) == preY) and ((Xcase + 1) == preX or (Xcase - 1) == preX):
+                        
+                        matrix[Ycase][Xcase] = pieceStr
+                        matrix[preY][preX] = ""
+                         
+                        
+                        canvasId = canvasMatrix[Ycase][Xcase]
+                        canvas.delete(canvasId)       
+                                
+                        objMatrix[Ycase][Xcase] = piece
+                        objMatrix[preY][preX] = NULL
+                        
+                        generalMatrix[Ycase][Xcase] = whitePiece
+                        generalMatrix[preY][preX] = ""
+                        
+                        if (Ycase == 0):        
+                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image = w_queen)
+                            
+                            matrix[Ycase][Xcase] = "w_queen"
+                                    
+                            objMatrix[Ycase][Xcase] = w_queen
+                            
+                            generalMatrix[Ycase][Xcase] = whitePiece
+                        else:
+                            
+                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
+                            
+                        canvas.delete(canvasMatrix[preY][preX])
+                        canvasMatrix[preY][preX] = NULL
+                        
+                if canvas.bind("<Button-1>") and matrix[preY][preX] == pieceStr:
+                    
+                    if (preY < 6):
+                        moveTwo = False
+                 
+                       
+                    if (preY - Ycase) < 3  and abs(preX - Xcase) < 1 and moveTwo == True:
+                        if Ycase < preY:
+                            matrix[Ycase][Xcase] = pieceStr
+                            matrix[preY][preX] = ""
+                            
+                            
+                            objMatrix[Ycase][Xcase] = piece
+                            objMatrix[preY][preX] = NULL
+                            
+                            generalMatrix[Ycase][Xcase] = whitePiece
+                            generalMatrix[preY][preX] = NULL
+                    
+                            canvas.delete(canvasId)
+                            
+                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
+                            canvasMatrix[preY][preX] = NULL
+                        
+                    elif ((preY - Ycase) < 2  and abs(preX - Xcase) < 1 and moveTwo == False and generalMatrix[Ycase][Xcase] != blackPiece):
+                        if Ycase < preY:
+                            matrix[Ycase][Xcase] = pieceStr
+                            matrix[preY][preX] = ""
+                            
+                            
+                            objMatrix[Ycase][Xcase] = piece
+                            objMatrix[preY][preX] = NULL
+                            
+                            generalMatrix[Ycase][Xcase] = whitePiece
+                            generalMatrix[preY][preX] = NULL
+                            
+                            
+                            canvas.delete(canvasId)
+                            
+                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
+                            canvasMatrix[preY][preX] = NULL
+                      
+                    
+                      
+                      
+                      
+            # 2nd click, checks to see where user is trying to move the black pawn.
+            elif ((matrix[preY][preX] != "w_pawn"and matrix[Ycase][Xcase] != "b_pawn") or (matrix[Ycase][Xcase] == "" and matrix[preY][preX] == "b_pawn")):
+                    
+                if (generalMatrix[Ycase][Xcase] == whitePiece):
+                    
+                    if ((Ycase - 1) == preY) and ((Xcase + 1) == preX or (Xcase - 1) == preX):
+                        
+                        matrix[Ycase][Xcase] = pieceStr
+                        matrix[preY][preX] = ""
+                         
+                        
+                        canvasId = canvasMatrix[Ycase][Xcase]
+                        canvas.delete(canvasId)       
+                                
+                        objMatrix[Ycase][Xcase] = piece
+                        objMatrix[preY][preX] = NULL
+                        
+                        generalMatrix[Ycase][Xcase] = blackPiece
+                        generalMatrix[preY][preX] = ""
+                        
+                                
+                        canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
+                        
+                        canvas.delete(canvasMatrix[preY][preX])
+                        canvasMatrix[preY][preX] = NULL
+                        
+                elif canvas.bind("<Button-1>") and matrix[preY][preX] == pieceStr:
+              
+                    if (preY > 1):
+                        moveTwo = False
+                        
+                        
+                    
+                       
+                    if (Ycase - preY) < 3 and abs(preX - Xcase) < 1 and moveTwo == True:
+                        if preY < Ycase:
+                            matrix[Ycase][Xcase] = pieceStr
+                            matrix[preY][preX] = ""
+                            
+                            
+                            objMatrix[Ycase][Xcase] = piece
+                            objMatrix[preY][preX] = NULL
+                            
+                            generalMatrix[Ycase][Xcase] = blackPiece
+                            generalMatrix[preY][preX] = ""
+                    
+                            canvas.delete(canvasId)
+                            
+                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
+                            canvasMatrix[preY][preX] = NULL
+                        
+                    elif ((Ycase - preY) < 2 and abs(preX - Xcase) < 1 and moveTwo == False and generalMatrix[Ycase][Xcase] != whitePiece):
+                        if preY < Ycase:
+                            matrix[Ycase][Xcase] = pieceStr
+                            matrix[preY][preX] = ""
+                            
+                            
+                            objMatrix[Ycase][Xcase] = piece
+                            objMatrix[preY][preX] = NULL
+                            
+                            generalMatrix[Ycase][Xcase] = blackPiece
+                            generalMatrix[preY][preX] = ""
+                    
+                            canvas.delete(canvasId)
+                            
+                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
+                            canvasMatrix[preY][preX] = NULL
+            
+            
+            
+    
+# Creating board and pieces
+createBoard()
+createWhitePawn()
+createWhiteRook()
+createWhiteKnight()
+createWhiteBishop()
+createwhiteKingnQueen()
+createBlackPawn()
+createBlackRook()
+createBlackKnight()
+createBlackBishop()
+createBlackKingnQueen()
+createMatrix()
+
+move = movePiece()
+
+canvas2 = Canvas(root, width = 800, height = 800)
+canvas2.bind()
+canvas.bind("<Button-1>", move.getOrigin)
+
+frame.pack()
+root.geometry("800x800")
+root.mainloop()
