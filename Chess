@@ -15,7 +15,7 @@ from PIL import ImageTk
 import math
 
 root = Tk()
-root.title("Game")
+root.title("CHESS - It's White's Turn")
 
 frame = Frame(root)
 
@@ -259,7 +259,7 @@ def createBlackKingnQueen():
 def createMatrix():
     global matrix
     matrix = [
-        ["b_rook1", "b_knight1", "b_bishop1", "b_queen", "b_king", "b_bishop2", "b_knight2", "b_rook2"],
+        ["b_rook", "b_knight", "b_bishop", "b_queen", "b_king", "b_bishop", "b_knight", "b_rook"],
         ["b_pawn", "b_pawn", "b_pawn", "b_pawn", "b_pawn", "b_pawn", "b_pawn", "b_pawn"],
         ["", "", "", "", "", "", "", ""],
         ["", "", "", "", "", "", "", ""],
@@ -307,198 +307,615 @@ def createMatrix():
                      ]
     
 class movePiece:
+    
     global isFirstClick
     isFirstClick = True 
-    def getOrigin(self, eventorigin):
+    global isWhite
+    isWhite = True
+    
+    def captureBlackPiece(self, Posx, Posy, xCurrent, yCurrent):
         
-        global Posx,Posy, i, pieceStr, piece, canvasId, moveTwo, preY , preX, isFirstClick
-        Xcase = math.ceil(eventorigin.x/100)-1
-        Ycase = math.ceil(eventorigin.y/100)-1
-        Posy = Ycase*100+50
-        Posx = Xcase*100+50
+        matrix[yCurrent][xCurrent] = pieceStr
+        matrix[preY][preX] = ""
+                                     
+                        
+        localCanvasId = canvasMatrix[yCurrent][xCurrent]
+        canvas.delete(localCanvasId)   
+                        
+        canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
+        canvas.delete(canvasMatrix[preY][preX])
+        canvasMatrix[preY][preX] = NULL
+                        
+                                            
+        objMatrix[yCurrent][xCurrent] = piece
+        objMatrix[preY][preX] = NULL    
+                                    
+        generalMatrix[yCurrent][xCurrent] = whitePiece
+        generalMatrix[preY][preX] = NULL 
+    
+    def captureWhitePiece(self, Posx, Posy, xCurrent, yCurrent): 
+        
+        matrix[yCurrent][xCurrent] = pieceStr
+        matrix[preY][preX] = ""
+                                     
+                        
+        localCanvasId = canvasMatrix[yCurrent][xCurrent]
+        canvas.delete(localCanvasId)   
+                        
+        canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
+        canvas.delete(canvasMatrix[preY][preX])
+        canvasMatrix[preY][preX] = NULL
+                        
+                                            
+        objMatrix[yCurrent][xCurrent] = piece
+        objMatrix[preY][preX] = NULL    
+                                    
+        generalMatrix[yCurrent][xCurrent] = blackPiece
+        generalMatrix[preY][preX] = NULL 
+    
+    def paintWhitePiece(self, Posx, Posy, xCurrent, yCurrent):
+        
+        matrix[yCurrent][xCurrent] = pieceStr
+        matrix[preY][preX] = ""
+                                        
+        objMatrix[yCurrent][xCurrent] = piece
+        objMatrix[preY][preX] = NULL
+                                        
+        generalMatrix[yCurrent][xCurrent] = whitePiece
+        generalMatrix[preY][preX] = NULL
+                                
+        canvas.delete(canvasId)
+                                        
+        canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
+        canvasMatrix[preY][preX] = NULL
+    
+    def paintBlackPiece(self, Posx, Posy, xCurrent, yCurrent):
+        
+        matrix[yCurrent][xCurrent] = pieceStr
+        matrix[preY][preX] = ""
+                                        
+                                        
+        objMatrix[yCurrent][xCurrent] = piece
+        objMatrix[preY][preX] = NULL
+                                        
+        generalMatrix[yCurrent][xCurrent] = blackPiece
+        generalMatrix[preY][preX] = NULL
+                                
+        canvas.delete(canvasId)
+                                        
+        canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
+        canvasMatrix[preY][preX] = NULL
+    
+    def movePawn(self, Posx, Posy, xCurrent, yCurrent, preX, preY, moveTwo):
+        global isWhite
+        if (isWhite and ((matrix[preY][preX] == "w_pawn" and generalMatrix[yCurrent][xCurrent] != whitePiece) or (matrix[yCurrent][xCurrent] == "" and matrix[preY][preX] == "w_pawn"))):
+                
+            if (generalMatrix[yCurrent][xCurrent] == blackPiece):
+                    
+                if ((yCurrent + 1) == preY) and ((xCurrent + 1) == preX or (xCurrent - 1) == preX):
+                        
+                    matrix[yCurrent][xCurrent] = pieceStr
+                    matrix[preY][preX] = ""
+                         
+                    localCanvasId = canvasMatrix[yCurrent][xCurrent]
+                    canvas.delete(localCanvasId)   
+                                
+                    objMatrix[yCurrent][xCurrent] = piece
+                    objMatrix[preY][preX] = NULL    
+                        
+                    generalMatrix[yCurrent][xCurrent] = whitePiece
+                    generalMatrix[preY][preX] = NULL
+                        
+                    if (yCurrent == 0): 
+                        canvas.delete(canvasMatrix[preY][preX])       
+                        canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image = w_queen)
+                        
+                        matrix[yCurrent][xCurrent] = "w_queen"
+                                    
+                        objMatrix[yCurrent][xCurrent] = w_queen
+                            
+                        generalMatrix[yCurrent][xCurrent] = whitePiece
+                    else:
+                            
+                        canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
+                            
+                        canvas.delete(canvasMatrix[preY][preX])
+                        canvasMatrix[preY][preX] = NULL 
+                      
+            # If the user is attempting to move the white pawn.   
+            if canvas.bind("<Button-1>") and matrix[preY][preX] == pieceStr:
+                # Ensures that no piece hopping is allowed.
+                if (matrix[preY-1][preX] == ""):
+                        
+                    if (preY < 6):
+                        moveTwo = False
+                     
+                           
+                    if (preY - yCurrent) < 3 and abs(preX - xCurrent) < 1 and moveTwo == True:
+                        if yCurrent < preY:
+                                
+                            self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                            
+                    elif ((preY - yCurrent) < 2  and abs(preX - xCurrent) < 1 and moveTwo == False and generalMatrix[yCurrent][xCurrent] != blackPiece):
+                        if yCurrent < preY:
+                            
+                            self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                            
+                        if (yCurrent == 0): 
+                            
+                            canvas.delete(canvasMatrix[preY][preX])       
+                            canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image = w_queen)
+                            
+                            matrix[yCurrent][xCurrent] = "w_queen"
+                                        
+                            objMatrix[yCurrent][xCurrent] = w_queen
+                                
+                            generalMatrix[yCurrent][xCurrent] = whitePiece 
+            isWhite = False
+            
+        # 2nd click, checks to see where user is trying to move the black pawn.
+        elif (isWhite == False and ((matrix[preY][preX] == "b_pawn"and generalMatrix[yCurrent][xCurrent] != blackPiece) or (matrix[yCurrent][xCurrent] == "" and matrix[preY][preX] == "b_pawn"))):
+                    
+            if (generalMatrix[yCurrent][xCurrent] == whitePiece):
+                    
+                if ((yCurrent - 1) == preY) and ((xCurrent + 1) == preX or (xCurrent - 1) == preX):
+                        
+                    matrix[yCurrent][xCurrent] = pieceStr
+                    matrix[preY][preX] = ""
+                         
+                        
+                    localCanvasId = canvasMatrix[yCurrent][xCurrent]
+                    canvas.delete(localCanvasId)       
+                                
+                    objMatrix[yCurrent][xCurrent] = piece
+                    objMatrix[preY][preX] = NULL
+                        
+                    generalMatrix[yCurrent][xCurrent] = blackPiece
+                    generalMatrix[preY][preX] = NULL
+                                
+                    if (yCurrent == 7): 
+                        canvas.delete(canvasMatrix[preY][preX])       
+                        canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image = b_queen)
+                        
+                        matrix[yCurrent][xCurrent] = "b_queen"
+                                    
+                        objMatrix[yCurrent][xCurrent] = b_queen
+                            
+                        generalMatrix[yCurrent][xCurrent] = blackPiece
+                        
+                    else:
+                            
+                        canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
+                            
+                        canvas.delete(canvasMatrix[preY][preX])
+                        canvasMatrix[preY][preX] = NULL
+                        
+            elif canvas.bind("<Button-1>") and matrix[preY][preX] == pieceStr:
+                # Ensures that no piece hopping is allowed.
+                if (matrix[preY+1][preX] == ""):
+                    if (preY > 1):
+                        moveTwo = False 
+
+                    if (yCurrent - preY) < 3 and abs(preX - xCurrent) < 1 and moveTwo == True:
+                        if preY < yCurrent:
+                            
+                            self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                            
+                    elif ((yCurrent - preY) < 2 and abs(preX - xCurrent) < 1 and moveTwo == False and generalMatrix[yCurrent][xCurrent] != whitePiece):
+                        if preY < yCurrent:
+                            
+                            self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+            isWhite = True
+              
+    def moveRook(self, Posx, Posy, xCurrent, yCurrent, preX, preY):
+        global isWhite
+        pieceX = -1
+        pieceY = -1
+        
+        if yCurrent - preY != 0:
+            for y in range(preY, yCurrent + int((yCurrent-preY)/abs(preY-yCurrent)), int((yCurrent-preY)/abs(preY-yCurrent))):
+                if y == preY: continue
+                if (generalMatrix[y][xCurrent] == whitePiece or generalMatrix[y][xCurrent] == blackPiece):
+                    pieceX = xCurrent
+                    pieceY = y
+                    break    
+           
+        if xCurrent - preX != 0:            
+            for x in range(preX, xCurrent + int((xCurrent-preX)/abs(xCurrent-preX)), int((xCurrent-preX)/abs(xCurrent-preX))):
+                if x == preX: continue
+                if (generalMatrix[yCurrent][x] == whitePiece or generalMatrix [yCurrent][x] == blackPiece):
+                    pieceX = x
+                    pieceY = yCurrent
+                    break
+                    
+        # USER CLICKS ON A WHITE ROOK
+        if matrix[preY][preX] == "w_rook" and isWhite:      
+                 
+            if (pieceY < preY):
+                if (yCurrent >= pieceY):
+                    
+                    #TRYING TO FIGURE OUT HOW TO CAPTURE BLACK PIECE WITHOUT PIECE HOPPING!
+                    if (generalMatrix[yCurrent][xCurrent] == blackPiece and abs(xCurrent - preX) < 1):
+                
+                        self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        
+                    elif generalMatrix[yCurrent][xCurrent] != whitePiece and abs(xCurrent - preX) < 1:
+                        
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                                
+            if (pieceY > preY):
+                if (yCurrent <= pieceY):
+                    
+                    #TRYING TO FIGURE OUT HOW TO CAPTURE BLACK PIECE WITHOUT PIECE HOPPING!
+                    if (generalMatrix[yCurrent][xCurrent] == blackPiece and abs(xCurrent - preX) < 1):
+                
+                        self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        
+                    elif generalMatrix[yCurrent][xCurrent] != whitePiece and abs(xCurrent - preX) < 1:
+                        
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                    
+            if (pieceX < preX):
+                if (xCurrent >= pieceX):
+                    
+                    #TRYING TO FIGURE OUT HOW TO CAPTURE BLACK PIECE WITHOUT PIECE HOPPING!
+                    if (generalMatrix[yCurrent][xCurrent] == blackPiece and abs(yCurrent - preY) < 1):
+                
+                        self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent)
+    
+    
+                    elif generalMatrix[yCurrent][xCurrent] != whitePiece and abs(yCurrent - preY) < 1:
+                        
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        
+            if (pieceX > preX):
+                if (xCurrent <= pieceX):
+                    
+                    #TRYING TO FIGURE OUT HOW TO CAPTURE BLACK PIECE WITHOUT PIECE HOPPING!  
+                    if (generalMatrix[yCurrent][xCurrent] == blackPiece and abs(yCurrent - preY) < 1):
+                
+                        self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        
+                    elif generalMatrix[yCurrent][xCurrent] != whitePiece and abs(yCurrent - preY) < 1:
+                        
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+            isWhite = False
+                         
+        # USER CLICKS ON BLACK PAWN
+        elif matrix[preY][preX] == "b_rook" and isWhite == False:      
+                 
+            if (pieceY < preY):
+                if (yCurrent >= pieceY):
+                    
+                    #TRYING TO FIGURE OUT HOW TO CAPTURE WHITE PIECE WITHOUT PIECE HOPPING!
+                    if (generalMatrix[yCurrent][xCurrent] == whitePiece and abs(xCurrent - preX) < 1):
+                
+                        self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        
+                    elif generalMatrix[yCurrent][xCurrent] != blackPiece and abs(xCurrent - preX) < 1:
+                        
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                                
+            if (pieceY > preY):
+                if (yCurrent <= pieceY):
+                    
+                    #TRYING TO FIGURE OUT HOW TO CAPTURE WHITE PIECE WITHOUT PIECE HOPPING!
+                    if (generalMatrix[yCurrent][xCurrent] == whitePiece and abs(xCurrent - preX) < 1):
+                
+                        self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        
+                    elif generalMatrix[yCurrent][xCurrent] != blackPiece and abs(xCurrent - preX) < 1:
+                        
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        
+            if (pieceX < preX):
+                if (xCurrent >= pieceX):
+                    
+                    #TRYING TO FIGURE OUT HOW TO CAPTURE WHITE PIECE WITHOUT PIECE HOPPING!
+                    if (generalMatrix[yCurrent][xCurrent] == whitePiece and abs(yCurrent - preY) < 1):
+                
+                        self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent)
+    
+    
+                    elif generalMatrix[yCurrent][xCurrent] != blackPiece and abs(yCurrent - preY) < 1:
+                        
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        
+            if (pieceX > preX):
+                if (xCurrent <= pieceX):
+                    
+                    #TRYING TO FIGURE OUT HOW TO CAPTURE WHITE PIECE WITHOUT PIECE HOPPING!  
+                    if (generalMatrix[yCurrent][xCurrent] == whitePiece and abs(yCurrent - preY) < 1):
+                
+                        self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        
+                    elif generalMatrix[yCurrent][xCurrent] != blackPiece and abs(yCurrent - preY) < 1:
+                        
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+            isWhite = True
+                       
+    def moveKnight(self, Posx, Posy, xCurrent, yCurrent, preX, preY):
+        global isWhite
+        topY = preY - 2
+        topLeftX = preX - 1
+        topRightX = preX + 1
+            
+        topMidY = preY - 1 
+        topMidRightX = preX + 2
+        topMidLeftX = preX - 2
+            
+        bottomMidY = preY + 1
+        bottomMidRightX = preX + 2
+        bottomMidLeftX = preX - 2
+            
+        bottomY = preY + 2
+        bottomRightX = preX + 1
+        bottomLeftX = preX - 1
+        
+        if (matrix[preY][preX] == "w_knight" and isWhite):
+            
+            if preY < 6:
+                
+                if generalMatrix[yCurrent][xCurrent] == blackPiece:
+                    
+                    if ((yCurrent == topY and xCurrent == topLeftX) or (yCurrent == topY and xCurrent == topRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX) or (yCurrent == bottomMidY and xCurrent ==  bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX) or (yCurrent == bottomY and xCurrent == bottomLeftX) or (yCurrent == bottomY and xCurrent == bottomRightX)):
+                        
+                        self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                     
+                
+                elif generalMatrix[yCurrent][xCurrent] == NULL and ((yCurrent == topY and xCurrent == topLeftX) or (yCurrent == topY and xCurrent == topRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX) or (yCurrent == bottomMidY and xCurrent == bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX) or (yCurrent == bottomY and xCurrent == bottomLeftX) or (yCurrent == bottomY and xCurrent == bottomRightX)):
+                    
+                    self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                    
+            elif preY < 7:
+            
+                if ((yCurrent == topY and xCurrent == topLeftX) or (yCurrent == topY and xCurrent == topRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX) or (yCurrent == bottomMidY and xCurrent ==  bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX)):
+                    
+                    self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent)
+
+                elif generalMatrix[yCurrent][xCurrent] == NULL and ((yCurrent == topY and xCurrent == topLeftX) or (yCurrent == topY and xCurrent == topRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX) or (yCurrent == bottomMidY and xCurrent == bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX)):
+                    
+                    self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+        
+            elif preY == 7:
+            
+                if ((yCurrent == topY and xCurrent == topLeftX) or (yCurrent == topY and xCurrent == topRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX)):                    
+                    
+                    self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent) 
+
+                elif generalMatrix[yCurrent][xCurrent] == NULL and ((yCurrent == topY and xCurrent == topLeftX) or (yCurrent == topY and xCurrent == topRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX)):
+                    
+                    self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)     
+            isWhite = False
+                                                                                                                                                                                                                                                                                                                                                                     
+        # BLACK KNIGHT MOVEMENT    
+        if (matrix[preY][preX] == "b_knight" and isWhite == False):
+            
+            if preY > 1:
+                
+                if generalMatrix[yCurrent][xCurrent] == whitePiece:
+                    
+                    if ((yCurrent == topY and xCurrent == topLeftX) or (yCurrent == topY and xCurrent == topRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX) or (yCurrent == bottomMidY and xCurrent ==  bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX) or (yCurrent == bottomY and xCurrent == bottomLeftX) or (yCurrent == bottomY and xCurrent == bottomRightX)):
+                        
+                        self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                
+                elif generalMatrix[yCurrent][xCurrent] == NULL and ((yCurrent == topY and xCurrent == topLeftX) or (yCurrent == topY and xCurrent == topRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX) or (yCurrent == bottomMidY and xCurrent == bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX) or (yCurrent == bottomY and xCurrent == bottomLeftX) or (yCurrent == bottomY and xCurrent == bottomRightX)):
+                    
+                    self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                    
+            elif preY > 0:
+            
+                if ((yCurrent == bottomY and xCurrent == bottomLeftX) or (yCurrent == bottomY and xCurrent == bottomRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX) or (yCurrent == bottomMidY and xCurrent ==  bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX)):
+                    
+                    self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent) 
+
+                elif generalMatrix[yCurrent][xCurrent] == NULL and ((yCurrent == bottomY and xCurrent == bottomLeftX) or (yCurrent == bottomY and xCurrent == bottomRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX) or (yCurrent == bottomMidY and xCurrent == bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX)):
+                    
+                    self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+        
+            elif preY == 0:
+            
+                if ((yCurrent == bottomY and xCurrent == bottomLeftX) or (yCurrent == bottomY and xCurrent == bottomRightX) or (yCurrent == bottomMidY and xCurrent == bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX)):                    
+                    
+                    self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent)
+
+                elif generalMatrix[yCurrent][xCurrent] == NULL and ((yCurrent == bottomY and xCurrent == bottomLeftX) or (yCurrent == bottomY and xCurrent == bottomRightX) or (yCurrent == bottomMidY and xCurrent == bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX)):
+                    
+                    self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)       
+            isWhite = True 
+                                                                                                                                                                                        
+    def moveBishop(self, Posx, Posy, xCurrent, yCurrent, preX, preY):
+        global isWhite
+        pieceX = -1
+        pieceY = -1
+        tempXCurrent = xCurrent
+        xMultiplier = 0
+        
+        if yCurrent - preY != 0 and xCurrent - preX != 0:
+            for y in range(preY, yCurrent + int((yCurrent-preY)/abs(preY-yCurrent)), int((yCurrent-preY)/abs(preY-yCurrent))):
+                    
+                if y == preY: continue
+                    
+                xMultiplier += 1
+                if (generalMatrix[y][preX + xMultiplier*int((tempXCurrent-preX)/abs(tempXCurrent-preX))] == whitePiece or generalMatrix[y][preX + xMultiplier*int((tempXCurrent-preX)/abs(tempXCurrent-preX))] == blackPiece):
+                    
+                    pieceX = tempXCurrent
+                    pieceY = y
+                    tempXCurrent += int((tempXCurrent-preX)/abs(tempXCurrent-preX))
+                    break
+                
+        if matrix[preY][preX] == "w_bishop" and isWhite:
+            
+            if pieceX == -1 and pieceY == -1 and abs(xCurrent - preX) == abs(yCurrent - preY):
+                
+                self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                 
+            if pieceY < preY and pieceX > preX:
+                
+                if yCurrent >= pieceY and xCurrent <= pieceX:
+                    
+                    if (generalMatrix[yCurrent][xCurrent] == blackPiece and abs(xCurrent - preX) == abs(yCurrent - preY)):
+                        
+                        self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent) 
+                        
+                    elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
+                        
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        
+            if pieceY < preY and pieceX < preX:
+                    
+                if yCurrent >= pieceY and xCurrent >= pieceX:
+                        
+                    if (generalMatrix[yCurrent][xCurrent] == blackPiece and abs(xCurrent - preX) == abs(yCurrent - preY)):
+                            
+                        self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                            
+                    elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
+                            
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+
+            if pieceY > preY and pieceX < preX:
+                    
+                if yCurrent <= pieceY and xCurrent >= pieceX:
+                        
+                    if (generalMatrix[yCurrent][xCurrent] == blackPiece and abs(xCurrent - preX) == abs(yCurrent - preY)):
+                            
+                        self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent) 
+                            
+                    elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
+                            
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent) 
+                        
+            if pieceY > preY and pieceX > preX:
+                    
+                if yCurrent <= pieceY and xCurrent <= pieceX:
+                        
+                    if (generalMatrix[yCurrent][xCurrent] == blackPiece and abs(xCurrent - preX) == abs(yCurrent - preY)):
+                            
+                        self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent)  
+                            
+                    elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
+                            
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)                                              
+            isWhite = False
+            
+        # Black Bishop Movement
+        if matrix[preY][preX] == "b_bishop" and isWhite == False:
+            
+            if pieceX == -1 and pieceY == -1 and abs(xCurrent - preX) == abs(yCurrent - preY):
+                
+                self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                 
+            if pieceY < preY and pieceX > preX:
+                
+                if yCurrent >= pieceY and xCurrent <= pieceX:
+                    
+                    if (generalMatrix[yCurrent][xCurrent] == whitePiece and abs(xCurrent - preX) == abs(yCurrent - preY)):
+                        
+                        self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent) 
+                        
+                    elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
+                        
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        
+            if pieceY < preY and pieceX < preX:
+                    
+                if yCurrent >= pieceY and xCurrent >= pieceX:
+                        
+                    if (generalMatrix[yCurrent][xCurrent] == whitePiece and abs(xCurrent - preX) == abs(yCurrent - preY)):
+                            
+                        self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                            
+                    elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
+                            
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+
+            if pieceY > preY and pieceX < preX:
+                    
+                if yCurrent <= pieceY and xCurrent >= pieceX:
+                        
+                    if (generalMatrix[yCurrent][xCurrent] == whitePiece and abs(xCurrent - preX) == abs(yCurrent - preY)):
+                            
+                        self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent) 
+                            
+                    elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
+                            
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent) 
+                        
+            if pieceY > preY and pieceX > preX:
+                    
+                if yCurrent <= pieceY and xCurrent <= pieceX:
+                        
+                    if (generalMatrix[yCurrent][xCurrent] == whitePiece and abs(xCurrent - preX) == abs(yCurrent - preY)):
+                            
+                        self.captureWhitePiece(Posx, Posy, xCurrent, yCurrent)  
+                            
+                    elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
+                            
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)                                              
+            isWhite = True
+            
+   def getOrigin(self, eventorigin):
+        
+        global pieceStr, piece, canvasId, moveTwo, preY , preX, isFirstClick
+        xCurrent = math.ceil(eventorigin.x/100)-1
+        yCurrent = math.ceil(eventorigin.y/100)-1
+        Posy = yCurrent*100+50
+        Posx = xCurrent*100+50
         moveTwo = True
         
         
         if (isFirstClick):
-            # Selects White pawn on first click
-            if matrix[Ycase][Xcase] != "" and generalMatrix[Ycase][Xcase] != blackPiece:
+            # Selects White piece on first click
+            if matrix[yCurrent][xCurrent] != "" and generalMatrix[yCurrent][xCurrent] != blackPiece:
                     
-                pieceStr = matrix[Ycase][Xcase]
+                pieceStr = matrix[yCurrent][xCurrent]
                         
-                preY = Ycase
-                preX = Xcase
+                preY = yCurrent
+                preX = xCurrent
                 print(pieceStr)
                         
-                piece = objMatrix[Ycase][Xcase]
-                canvasId = canvasMatrix[Ycase][Xcase]
+                piece = objMatrix[yCurrent][xCurrent]
+                canvasId = canvasMatrix[yCurrent][xCurrent]
                     
-            # Selects Black pawn on first piece
-            elif matrix[Ycase][Xcase] != "" and generalMatrix[Ycase][Xcase] != whitePiece:
+            # Selects Black piece on first piece
+            elif matrix[yCurrent][xCurrent] != "" and generalMatrix[yCurrent][xCurrent] != whitePiece:
                       
                    
-                pieceStr = matrix[Ycase][Xcase]
+                pieceStr = matrix[yCurrent][xCurrent]
                         
-                preY = Ycase
-                preX = Xcase
+                preY = yCurrent
+                preX = xCurrent
                 print(pieceStr)
                         
-                piece = objMatrix[Ycase][Xcase]
-                canvasId = canvasMatrix[Ycase][Xcase]
+                piece = objMatrix[yCurrent][xCurrent]
+                canvasId = canvasMatrix[yCurrent][xCurrent]
                 
             isFirstClick = False
         
         elif (isFirstClick == False):       
             # 2nd click, checks to see where user is trying to move the white pawn.
-            if ((matrix[preY][preX] != "b_pawn" and matrix[Ycase][Xcase] != "w_pawn") or (matrix[Ycase][Xcase] == "" and matrix[preY][preX] == "w_pawn")):
+            if canvas.bind("<Button-1>") and (matrix[preY][preX] == "w_pawn" or matrix[preY][preX] == "b_pawn"):
+                self.movePawn(Posx, Posy, xCurrent, yCurrent, preX, preY, moveTwo)
+            
+            # White Rook Movement
+            if canvas.bind("<Button-1>") and matrix[preY][preX] == "w_rook" or matrix[preY][preX] == "b_rook":
+                self.moveRook(Posx, Posy, xCurrent, yCurrent, preX, preY)
+            
+            if canvas.bind("<Button-1>") and matrix[preY][preX] == "w_knight" or matrix[preY][preX] == "b_knight":
+                self.moveKnight(Posx, Posy, xCurrent, yCurrent, preX, preY)
+            
+            if canvas.bind("<Button-1>") and matrix[preY][preX] == "w_bishop" or matrix[preY][preX] == "b_bishop":
+                self.moveBishop(Posx, Posy, xCurrent, yCurrent, preX, preY)
                 
-                if (generalMatrix[Ycase][Xcase] == blackPiece):
-                    
-                    if ((Ycase + 1) == preY) and ((Xcase + 1) == preX or (Xcase - 1) == preX):
-                        
-                        matrix[Ycase][Xcase] = pieceStr
-                        matrix[preY][preX] = ""
-                         
-                        
-                        canvasId = canvasMatrix[Ycase][Xcase]
-                        canvas.delete(canvasId)       
-                                
-                        objMatrix[Ycase][Xcase] = piece
-                        objMatrix[preY][preX] = NULL
-                        
-                        generalMatrix[Ycase][Xcase] = whitePiece
-                        generalMatrix[preY][preX] = ""
-                        
-                        if (Ycase == 0):        
-                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image = w_queen)
-                            
-                            matrix[Ycase][Xcase] = "w_queen"
-                                    
-                            objMatrix[Ycase][Xcase] = w_queen
-                            
-                            generalMatrix[Ycase][Xcase] = whitePiece
-                        else:
-                            
-                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
-                            
-                        canvas.delete(canvasMatrix[preY][preX])
-                        canvasMatrix[preY][preX] = NULL
-                        
-                if canvas.bind("<Button-1>") and matrix[preY][preX] == pieceStr:
-                    
-                    if (preY < 6):
-                        moveTwo = False
-                 
-                       
-                    if (preY - Ycase) < 3  and abs(preX - Xcase) < 1 and moveTwo == True:
-                        if Ycase < preY:
-                            matrix[Ycase][Xcase] = pieceStr
-                            matrix[preY][preX] = ""
-                            
-                            
-                            objMatrix[Ycase][Xcase] = piece
-                            objMatrix[preY][preX] = NULL
-                            
-                            generalMatrix[Ycase][Xcase] = whitePiece
-                            generalMatrix[preY][preX] = NULL
-                    
-                            canvas.delete(canvasId)
-                            
-                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
-                            canvasMatrix[preY][preX] = NULL
-                        
-                    elif ((preY - Ycase) < 2  and abs(preX - Xcase) < 1 and moveTwo == False and generalMatrix[Ycase][Xcase] != blackPiece):
-                        if Ycase < preY:
-                            matrix[Ycase][Xcase] = pieceStr
-                            matrix[preY][preX] = ""
-                            
-                            
-                            objMatrix[Ycase][Xcase] = piece
-                            objMatrix[preY][preX] = NULL
-                            
-                            generalMatrix[Ycase][Xcase] = whitePiece
-                            generalMatrix[preY][preX] = NULL
-                            
-                            
-                            canvas.delete(canvasId)
-                            
-                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
-                            canvasMatrix[preY][preX] = NULL
-                      
-                    
-                      
-                      
-                      
-            # 2nd click, checks to see where user is trying to move the black pawn.
-            elif ((matrix[preY][preX] != "w_pawn"and matrix[Ycase][Xcase] != "b_pawn") or (matrix[Ycase][Xcase] == "" and matrix[preY][preX] == "b_pawn")):
-                    
-                if (generalMatrix[Ycase][Xcase] == whitePiece):
-                    
-                    if ((Ycase - 1) == preY) and ((Xcase + 1) == preX or (Xcase - 1) == preX):
-                        
-                        matrix[Ycase][Xcase] = pieceStr
-                        matrix[preY][preX] = ""
-                         
-                        
-                        canvasId = canvasMatrix[Ycase][Xcase]
-                        canvas.delete(canvasId)       
-                                
-                        objMatrix[Ycase][Xcase] = piece
-                        objMatrix[preY][preX] = NULL
-                        
-                        generalMatrix[Ycase][Xcase] = blackPiece
-                        generalMatrix[preY][preX] = ""
-                        
-                                
-                        canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
-                        
-                        canvas.delete(canvasMatrix[preY][preX])
-                        canvasMatrix[preY][preX] = NULL
-                        
-                elif canvas.bind("<Button-1>") and matrix[preY][preX] == pieceStr:
-              
-                    if (preY > 1):
-                        moveTwo = False
-                        
-                        
-                    
-                       
-                    if (Ycase - preY) < 3 and abs(preX - Xcase) < 1 and moveTwo == True:
-                        if preY < Ycase:
-                            matrix[Ycase][Xcase] = pieceStr
-                            matrix[preY][preX] = ""
-                            
-                            
-                            objMatrix[Ycase][Xcase] = piece
-                            objMatrix[preY][preX] = NULL
-                            
-                            generalMatrix[Ycase][Xcase] = blackPiece
-                            generalMatrix[preY][preX] = ""
-                    
-                            canvas.delete(canvasId)
-                            
-                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
-                            canvasMatrix[preY][preX] = NULL
-                        
-                    elif ((Ycase - preY) < 2 and abs(preX - Xcase) < 1 and moveTwo == False and generalMatrix[Ycase][Xcase] != whitePiece):
-                        if preY < Ycase:
-                            matrix[Ycase][Xcase] = pieceStr
-                            matrix[preY][preX] = ""
-                            
-                            
-                            objMatrix[Ycase][Xcase] = piece
-                            objMatrix[preY][preX] = NULL
-                            
-                            generalMatrix[Ycase][Xcase] = blackPiece
-                            generalMatrix[preY][preX] = ""
-                    
-                            canvas.delete(canvasId)
-                            
-                            canvasMatrix[Ycase][Xcase] = canvas.create_image(Posx, Posy, image=piece)
-                            canvasMatrix[preY][preX] = NULL
-            
-            
-            
-    
+            if canvas.bind("<Button-1>") and matrix[preY][preX] == "w_queen" or matrix[preY][preX] == "b_queen":
+                self.moveQueen(Posx, Posy, xCurrent, yCurrent, preX, preY)
+        
+            if isWhite:
+                root.title("CHESS - It's White's Turn")
+            else:
+                root.title("CHESS - It's Black's Turn")
+            isFirstClick = True
 # Creating board and pieces
 createBoard()
 createWhitePawn()
