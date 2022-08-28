@@ -424,7 +424,7 @@ class CheckKing():
                 isKingCheck = True
                 pieceCheck = "b_pawn"
             
-            
+           
         add = 1
         # Checking the top right diagonal of bishop movement.
         for y in range(0, bishopY): 
@@ -494,7 +494,7 @@ class CheckKing():
         add = 1
             
                         
-        
+        # This is used if a discovered check were to ever happen. Example: White Pawn moves from e4 to e6 resulting in a check by the black bishop.
         if matrix[yCurrent][xCurrent] != "":
             # ROOK CHECK WITH KING POSITION
             # Checks every square from the king to the top of the board.
@@ -589,7 +589,7 @@ class CheckKing():
                 else:
                     continue
                 break
-            
+         
         # None of the pieces are checking the King.       
         return isKingCheck
      
@@ -630,11 +630,85 @@ class CheckKing():
                 break
             else:
                 continue
+        
+        add = 1
+        # Checking the top right diagonal of bishop movement.
+        for y in range(kingY, bishopY): 
+            for x in range(bishopX + add, bishopX + add+1):
+                add += 1
+                if (x < 8 and y < 8):
+                    if (bishopY - y != yCurrent and x != xCurrent):
+                        break
+                        
+                    elif (bishopY - y == yCurrent and x == xCurrent):
+                        pieceY = yCurrent
+                        pieceX = xCurrent
+            else:
+                continue
+            break
             
-        if pieceCheck == "b_rook":
+        add = 1
+                
+        # Checking the bottom right diagonal of bishop movement.  
+        for y in range(bishopY+1, kingY):  
+            for x in range(bishopX + add, bishopX + add+1):
+                add += 1
+                if (x < 8 and y < 8):
+                    if (y != yCurrent and x != xCurrent):
+                        break
+                        
+                    elif (y == yCurrent and x == xCurrent):
+                        pieceY = yCurrent
+                        pieceX = xCurrent
+            else:
+                continue
+            break
+                           
+        add = 1
+               
+        # Checking the top left diagonal of bishop movement.    
+        for y in range(kingY, bishopY):   
+            for x in range(bishopX - add, bishopX - add+1):
+                add += 1
+                if (x < 8 and y < 8):
+                    if (bishopY - y != yCurrent and x != xCurrent):
+                        break
+                        
+                    elif (bishopY - y == yCurrent and x == xCurrent):
+                        pieceY= yCurrent
+                        pieceX = xCurrent
+            else:
+                continue
+            break                     
+            
+        add = 1
+        # Checking the bottom left diagonal of bishop movement.   
+        for y in range(bishopY+1, kingY):   
+            for x in range(bishopX - add, bishopX - add+1):
+                add += 1
+                if (x < 8 and y < 8):
+                    if (y != yCurrent and x != xCurrent):
+                        break
+                        
+                    elif (y == yCurrent and x == xCurrent):
+                        pieceY = yCurrent 
+                        pieceX = xCurrent
+            else:
+                continue
+            break
+            
+        add = 1
+        
+        if pieceCheck == "b_rook" or pieceCheck == "b_bishop":
             if pieceY != -1 and pieceX != -1:
                 isKingCheck = False
                 return True
+        
+        if (bishopY == yCurrent and bishopX == xCurrent) or (rookY == yCurrent and rookX == xCurrent):
+            isKingCheck = False
+            return True 
+
+        
         else:
             return False    
         
@@ -688,7 +762,7 @@ class movePiece:
         generalMatrix[yCurrent][xCurrent] = blackPiece
         generalMatrix[preY][preX] = NULL 
         
-    def paintWhitePiece(self, Posx, Posy, xCurrent, yCurrent):
+    def paintWhitePiece(self, Posx, Posy, xCurrent, yCurrent, preY, preX):
         
         matrix[yCurrent][xCurrent] = pieceStr
         matrix[preY][preX] = ""
@@ -698,13 +772,15 @@ class movePiece:
                                         
         generalMatrix[yCurrent][xCurrent] = whitePiece
         generalMatrix[preY][preX] = NULL
-                                
+        
+        localCanvasId = canvasMatrix[yCurrent][xCurrent]
+          
         canvas.delete(canvasId)
                                         
         canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
         canvasMatrix[preY][preX] = NULL
     
-    def paintBlackPiece(self, Posx, Posy, xCurrent, yCurrent):
+    def paintBlackPiece(self, Posx, Posy, xCurrent, yCurrent, preY, preX):
         
         matrix[yCurrent][xCurrent] = pieceStr
         matrix[preY][preX] = ""
@@ -726,7 +802,7 @@ class movePiece:
         global title
         global isKingCheck
         Check.blockCheck(xCurrent, yCurrent)
-        if ((Check.blockCheck(xCurrent, yCurrent)) or (isKingCheck == False) and isWhite and ((matrix[preY][preX] == "w_pawn" and generalMatrix[yCurrent][xCurrent] != whitePiece) or (matrix[yCurrent][xCurrent] == "" and matrix[preY][preX] == "w_pawn"))):
+        if ((Check.blockCheck(xCurrent, yCurrent) or isKingCheck == False) and isWhite and ((matrix[preY][preX] == "w_pawn" and generalMatrix[yCurrent][xCurrent] != whitePiece) or (matrix[yCurrent][xCurrent] == "" and matrix[preY][preX] == "w_pawn"))):
                 
             if (generalMatrix[yCurrent][xCurrent] == blackPiece):
                     
@@ -772,12 +848,12 @@ class movePiece:
                     if (preY - yCurrent) < 3 and abs(preX - xCurrent) < 1 and moveTwo == True:
                         if yCurrent < preY:
                                 
-                            self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                            self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                             
                     elif ((preY - yCurrent) < 2  and abs(preX - xCurrent) < 1 and moveTwo == False and generalMatrix[yCurrent][xCurrent] != blackPiece):
                         if yCurrent < preY:
                             
-                            self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                            self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                             
                         if (yCurrent == 0): 
                             
@@ -789,6 +865,9 @@ class movePiece:
                             objMatrix[yCurrent][xCurrent] = w_queen
                                 
                             generalMatrix[yCurrent][xCurrent] = whitePiece 
+            if (Check.kingCheck(Posx, Posy, xCurrent, yCurrent)):
+                self.paintWhitePiece(Posx, Posy, preX, preY, yCurrent, xCurrent)
+                
             isWhite = False
         # 2nd click, checks to see where user is trying to move the black pawn.
         elif (isWhite == False and ((matrix[preY][preX] == "b_pawn"and generalMatrix[yCurrent][xCurrent] != blackPiece) or (matrix[yCurrent][xCurrent] == "" and matrix[preY][preX] == "b_pawn"))):
@@ -836,14 +915,14 @@ class movePiece:
                     if (yCurrent - preY) < 3 and abs(preX - xCurrent) < 1 and moveTwo == True:
                         if preY < yCurrent:
                             
-                            self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                            self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                             
                     elif ((yCurrent - preY) < 2 and abs(preX - xCurrent) < 1 and moveTwo == False and generalMatrix[yCurrent][xCurrent] != whitePiece):
                         if preY < yCurrent:
                             
-                            self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                            self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             isWhite = True
-            
+        
         if (Check.kingCheck(Posx, Posy, xCurrent, yCurrent)):
             title = "Check: "
             print("WHITE KING IS IN CHECK")
@@ -888,7 +967,7 @@ class movePiece:
                         
                     elif generalMatrix[yCurrent][xCurrent] != whitePiece and abs(xCurrent - preX) < 1:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                                 
             if (pieceY > preY):
                 if (yCurrent <= pieceY):
@@ -900,7 +979,7 @@ class movePiece:
                         
                     elif generalMatrix[yCurrent][xCurrent] != whitePiece and abs(xCurrent - preX) < 1:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                     
             if (pieceX < preX):
                 if (xCurrent >= pieceX):
@@ -913,7 +992,7 @@ class movePiece:
     
                     elif generalMatrix[yCurrent][xCurrent] != whitePiece and abs(yCurrent - preY) < 1:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             if (pieceX > preX):
                 if (xCurrent <= pieceX):
@@ -925,7 +1004,7 @@ class movePiece:
                         
                     elif generalMatrix[yCurrent][xCurrent] != whitePiece and abs(yCurrent - preY) < 1:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             isWhite = False
                          
         # USER CLICKS ON BLACK PAWN
@@ -941,7 +1020,7 @@ class movePiece:
                         
                     elif generalMatrix[yCurrent][xCurrent] != blackPiece and abs(xCurrent - preX) < 1:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                                 
             if (pieceY > preY):
                 if (yCurrent <= pieceY):
@@ -953,7 +1032,7 @@ class movePiece:
                         
                     elif generalMatrix[yCurrent][xCurrent] != blackPiece and abs(xCurrent - preX) < 1:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             if (pieceX < preX):
                 if (xCurrent >= pieceX):
@@ -966,7 +1045,7 @@ class movePiece:
     
                     elif generalMatrix[yCurrent][xCurrent] != blackPiece and abs(yCurrent - preY) < 1:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             if (pieceX > preX):
                 if (xCurrent <= pieceX):
@@ -978,7 +1057,7 @@ class movePiece:
                         
                     elif generalMatrix[yCurrent][xCurrent] != blackPiece and abs(yCurrent - preY) < 1:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             isWhite = True
             
             if (Check.kingCheck(Posx, Posy, xCurrent, yCurrent)):
@@ -1053,7 +1132,7 @@ class movePiece:
             
             if pieceX == -1 and pieceY == -1 and abs(xCurrent - preX) == abs(yCurrent - preY):
                 
-                self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                  
             if pieceY < preY and pieceX > preX:
                 
@@ -1065,7 +1144,7 @@ class movePiece:
                         
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             if pieceY < preY and pieceX < preX:
                     
@@ -1077,7 +1156,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
                             
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
 
             if pieceY > preY and pieceX < preX:
                     
@@ -1089,7 +1168,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
                             
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent) 
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX) 
                         
             if pieceY > preY and pieceX > preX:
                     
@@ -1101,7 +1180,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
                             
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)                                              
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)                                              
             isWhite = False
             
         # Black Bishop Movement
@@ -1109,7 +1188,7 @@ class movePiece:
             
             if pieceX == -1 and pieceY == -1 and abs(xCurrent - preX) == abs(yCurrent - preY):
                 
-                self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                  
             if pieceY < preY and pieceX > preX:
                 
@@ -1121,7 +1200,7 @@ class movePiece:
                         
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             if pieceY < preY and pieceX < preX:
                     
@@ -1133,7 +1212,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
                             
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
 
             if pieceY > preY and pieceX < preX:
                     
@@ -1145,7 +1224,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
                             
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent) 
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX) 
                         
             if pieceY > preY and pieceX > preX:
                     
@@ -1157,7 +1236,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY):
                             
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)                                              
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)                                              
             isWhite = True
             
         if (Check.kingCheck(Posx, Posy, xCurrent, yCurrent)):
@@ -1220,7 +1299,7 @@ class movePiece:
             # Piece is not found.
             if pieceX == -1 and pieceY == -1 and (abs(xCurrent - preX) == abs(yCurrent - preY) or abs(xCurrent - preX) < 1 or abs(yCurrent - preY) < 1):
                 
-                self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             # Piece is found in front and to the right of the queen.
             elif pieceY <= preY and pieceX >= preX:
@@ -1233,7 +1312,7 @@ class movePiece:
                         
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY) or abs(yCurrent - preY) < 1:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             # Piece is found in front and to the left of the queen.     
             elif pieceY <= preY and pieceX <= preX:
@@ -1246,7 +1325,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY)or abs(xCurrent - preX) < 1 or abs(yCurrent - preY) < 1:
                             
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             # Piece is found behind and to the left of the queen
             elif pieceY >= preY and pieceX <= preX:
@@ -1259,7 +1338,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY) or abs(xCurrent - preX) < 1 or abs(yCurrent - preY) < 1:
                             
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent) 
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX) 
             
             # Piece is found behind and to the right of the queen.           
             elif pieceY >= preY and pieceX >= preX:
@@ -1272,7 +1351,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY) or abs(xCurrent - preX) < 1 or abs(yCurrent - preY) < 1:
                             
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)                                              
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)                                              
             isWhite = False
 
         if matrix[preY][preX] == "b_queen" and isWhite == False:
@@ -1280,7 +1359,7 @@ class movePiece:
             # Piece is not found.
             if pieceX == -1 and pieceY == -1 and (abs(xCurrent - preX) == abs(yCurrent - preY) or abs(xCurrent - preX) < 1 or abs(yCurrent - preY) < 1):
                 
-                self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             # Piece is found in front and to the right of the queen.
             elif pieceY <= preY and pieceX >= preX:
@@ -1293,7 +1372,7 @@ class movePiece:
                         
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY) or abs(xCurrent - preX) < 1 or abs(yCurrent - preY) < 1:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             # Piece is found in front and to the left of the queen.     
             elif pieceY <= preY and pieceX <= preX:
@@ -1306,7 +1385,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY) or abs(xCurrent - preX) < 1 or abs(yCurrent - preY) < 1:
                             
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             # Piece is found behind and to the left of the queen
             elif pieceY >= preY and pieceX <= preX:
@@ -1319,7 +1398,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY) or abs(xCurrent - preX) < 1 or abs(yCurrent - preY) < 1:
                             
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent) 
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX) 
             
             # Piece is found behind and to the right of the queen.           
             elif pieceY >= preY and pieceX >= preX:
@@ -1332,7 +1411,7 @@ class movePiece:
                             
                     elif generalMatrix[yCurrent][xCurrent] == NULL and abs(xCurrent - preX) == abs(yCurrent - preY)or abs(xCurrent - preX) < 1 or abs(yCurrent - preY) < 1:
                             
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)                                              
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)                                              
             isWhite = True
         queenX = xCurrent
         queenY = yCurrent
@@ -1368,7 +1447,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             elif preY == 7 and preX == 7:
                 
@@ -1380,7 +1459,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                 
             elif preY == 0 and preX == 0:
 
@@ -1392,7 +1471,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             elif preY == 0 and preX == 7:
 
@@ -1404,7 +1483,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             elif preY == 7:
                 
@@ -1416,7 +1495,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             elif preY == 0:
 
@@ -1430,7 +1509,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             elif preX == 7:
                 
@@ -1442,7 +1521,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             elif preX == 0:
                 
@@ -1455,7 +1534,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             else:
             
@@ -1468,7 +1547,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintWhitePiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             isWhite = False   
         
         if matrix[preY][preX] == "b_king" and isWhite == False:
@@ -1485,7 +1564,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             elif preY == 7 and preX == 7:
 
@@ -1497,7 +1576,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                 
             elif preY == 0 and preX == 0:
                 
@@ -1509,7 +1588,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             elif preY == 0 and preX == 7:
   
@@ -1521,7 +1600,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             elif preY == 7:
 
@@ -1533,7 +1612,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             elif preY == 0:
                 
@@ -1545,7 +1624,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             elif preX == 7:
 
@@ -1557,7 +1636,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                             
             elif preX == 0:
 
@@ -1569,7 +1648,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
             
             else:
                 
@@ -1581,7 +1660,7 @@ class movePiece:
                 
                     elif generalMatrix[yCurrent][xCurrent] == NULL:
                         
-                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent)
+                        self.paintBlackPiece(Posx, Posy, xCurrent, yCurrent, preY, preX)
                         
             isWhite = True   
             
