@@ -1,7 +1,37 @@
 '''
-Created on Jul 13, 2022
+
+Created on July 13, 2022
 
 @author: Sanjay Sundaram
+@version: 2.0
+@date: July 22, 2023
+@change: Chess pieces can no longer capture same color pieces, no more bugs with knight movement! :)
+@bug: Class CheckKing -> kingCheck() -> king escapes check when user clicks away from king (idk why)...
+@note: Will be adding new features to account for all possible checks made on the king; soon there will be a way to checkmate (end the game).
+@license: 
+
+MIT License
+
+Copyright (c) 2023 Sanjay Sundaram
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
 '''
 from pip._vendor.pygments.formatters import img
 from webbrowser import BackgroundBrowser
@@ -299,7 +329,8 @@ def createMatrix():
     blackPiece = "B"
     global whitePiece
     whitePiece = "W"
-    generalMatrix = [[blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece],
+    generalMatrix = [
+                     [blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece],
                      [blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece, blackPiece],
                      [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
                      [NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
@@ -308,7 +339,6 @@ def createMatrix():
                      [whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece],
                      [whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece, whitePiece] 
                     ]
-    
     
 class CheckKing():
     
@@ -494,7 +524,7 @@ class CheckKing():
         add = 1
             
                         
-        # This is used if a discovered check were to ever happen. Example: White Pawn moves from e4 to e6 resulting in a check by the black bishop.
+        # This is used if a discovered check were to ever happen. Example: Black Pawn moves from e4 to e6 resulting in a check by the black bishop.
         if matrix[yCurrent][xCurrent] != "":
             # ROOK CHECK WITH KING POSITION
             # Checks every square from the king to the top of the board.
@@ -722,45 +752,46 @@ class movePiece:
     Check = CheckKing()
     
     
-    
     def captureBlackPiece(self, Posx, Posy, xCurrent, yCurrent):
-        
-        matrix[yCurrent][xCurrent] = pieceStr
-        matrix[preY][preX] = ""
-                                     
-        canvas.delete(canvasMatrix[yCurrent][xCurrent])  
-        canvasMatrix[yCurrent][xCurrent] = NULL 
-                        
-        canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
-        canvas.delete(canvasMatrix[preY][preX])
-        canvasMatrix[preY][preX] = NULL
-                        
-                                            
-        objMatrix[yCurrent][xCurrent] = piece
-        objMatrix[preY][preX] = NULL    
-                                    
-        generalMatrix[yCurrent][xCurrent] = whitePiece
-        generalMatrix[preY][preX] = NULL 
+        if generalMatrix[yCurrent][xCurrent] != whitePiece:
+
+            matrix[yCurrent][xCurrent] = pieceStr
+            matrix[preY][preX] = ""
+            
+            canvas.delete(canvasMatrix[yCurrent][xCurrent])  
+            canvasMatrix[yCurrent][xCurrent] = NULL 
+                            
+            canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
+            canvas.delete(canvasMatrix[preY][preX])
+            canvasMatrix[preY][preX] = NULL
+                            
+                                                
+            objMatrix[yCurrent][xCurrent] = piece
+            objMatrix[preY][preX] = NULL    
+                                        
+            generalMatrix[yCurrent][xCurrent] = whitePiece
+            generalMatrix[preY][preX] = NULL 
     
     def captureWhitePiece(self, Posx, Posy, xCurrent, yCurrent): 
-        
-        matrix[yCurrent][xCurrent] = pieceStr
-        matrix[preY][preX] = ""
-                                     
-                        
-        localCanvasId = canvasMatrix[yCurrent][xCurrent]
-        canvas.delete(localCanvasId)   
-                        
-        canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
-        canvas.delete(canvasMatrix[preY][preX])
-        canvasMatrix[preY][preX] = NULL
-                        
-                                            
-        objMatrix[yCurrent][xCurrent] = piece
-        objMatrix[preY][preX] = NULL    
-                                    
-        generalMatrix[yCurrent][xCurrent] = blackPiece
-        generalMatrix[preY][preX] = NULL 
+        if generalMatrix[yCurrent][xCurrent] != blackPiece:
+            
+            matrix[yCurrent][xCurrent] = pieceStr
+            matrix[preY][preX] = ""
+                                         
+                            
+            localCanvasId = canvasMatrix[yCurrent][xCurrent]
+            canvas.delete(localCanvasId)   
+                            
+            canvasMatrix[yCurrent][xCurrent] = canvas.create_image(Posx, Posy, image=piece)
+            canvas.delete(canvasMatrix[preY][preX])
+            canvasMatrix[preY][preX] = NULL
+                            
+                                                
+            objMatrix[yCurrent][xCurrent] = piece
+            objMatrix[preY][preX] = NULL    
+                                        
+            generalMatrix[yCurrent][xCurrent] = blackPiece
+            generalMatrix[preY][preX] = NULL 
         
     def paintWhitePiece(self, Posx, Posy, xCurrent, yCurrent, preY, preX):
         
@@ -1082,15 +1113,13 @@ class movePiece:
         bottomRightX = preX + 1
         bottomLeftX = preX - 1
         
-        self.kingCheck(Posx, Posy, xCurrent, yCurrent)
+        CheckKing.kingCheck(self, Posx, Posy, xCurrent, yCurrent)
         
         if (isKingCheck == False and matrix[preY][preX] == "w_knight" and isWhite):
             
             if ((yCurrent == topY and xCurrent == topLeftX) or (yCurrent == topY and xCurrent == topRightX) or (yCurrent == topMidY and xCurrent == topMidLeftX) or (yCurrent == topMidY and xCurrent == topMidRightX) or (yCurrent == bottomMidY and xCurrent ==  bottomMidLeftX) or (yCurrent == bottomMidY and xCurrent == bottomMidRightX) or (yCurrent == bottomY and xCurrent == bottomLeftX) or (yCurrent == bottomY and xCurrent == bottomRightX)):
                         
                         self.captureBlackPiece(Posx, Posy, xCurrent, yCurrent)
-            
-            
             
             isWhite = False
                                                                                                                                                                                                                                                                                                                                                                      
@@ -1292,7 +1321,7 @@ class movePiece:
                     pieceY = yCurrent
                     break
              
-        self.kingCheck(Posx, Posy, xCurrent, yCurrent)
+        CheckKing.kingCheck(self, Posx, Posy, xCurrent, yCurrent)
                 
         if isKingCheck == False and matrix[preY][preX] == "w_queen" and isWhite:
             
@@ -1749,12 +1778,10 @@ createBlackBishop()
 createBlackKingnQueen()
 createMatrix()
 
-
 canvas2 = Canvas(root, width = 800, height = 800)
 canvas2.bind()
 move = movePiece()
 canvas.bind("<Button-1>", move.getOrigin)
-
 
 frame.pack()
 root.geometry("800x800")
